@@ -1,0 +1,1667 @@
+const site = window.location.hostname
+
+if (site.includes("roblox.com")) {
+
+  // Global variable to track modal visibility
+  let isModalVisible = false;
+
+  // Function to style a button
+  function styleButton(button, text, href, imgSrc) {
+    button.style.display = 'flex';
+    button.style.alignItems = 'center';
+    button.style.marginLeft = '5px';
+    button.style.bottom = '0';
+    button.style.width = '165px';
+    button.style.height = '20px';
+    button.style.borderRadius = '6px';
+    button.style.borderColor = 'transparent';
+    button.style.backgroundColor = 'transparent';
+    button.style.color = '#ffffff';
+    button.style.transition = 'all 0.25s';
+    button.style.fontSize = '16px';
+    button.style.fontWeight = '500';
+    button.style.cursor = 'pointer';
+    button.style.pointerEvents = 'auto';
+
+    // Add image to the button
+    const img = document.createElement('img');
+    img.src = imgSrc;
+    img.style.width = '22px';
+    img.style.height = '22px';
+    img.style.marginRight = '8px';
+    img.style.transition = 'filter 0.25s';
+    img.alt = '';
+    button.appendChild(img);
+
+    // Add text to the button
+    const span = document.createElement('span');
+    span.textContent = text;
+    button.appendChild(span);
+
+    // Set click event to open the modal
+    button.onclick = function() {
+      if (!isModalVisible) {
+        isModalVisible = true;
+        console.log(`${text} button clicked!`);
+        showModal();
+      }
+    };
+
+    button.addEventListener('mouseenter', function() {
+      if (!isModalVisible) {
+        button.style.backgroundColor = 'transparent';
+        button.style.color = '#ffffff';
+      }
+    });
+
+    button.addEventListener('mouseleave', function() {
+      if (!isModalVisible) {
+        button.style.backgroundColor = 'transparent';
+        button.style.color = '#ffffff';
+      }
+    });
+  }
+
+  // Function to create a button with title, ID, onClick function, and info
+  
+  function createButton(title, id, onClick, info) {
+    let isOn = localStorage.getItem(`buttonState-${id}`) === 'true';
+    
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.alignItems = 'center';
+    buttonContainer.style.margin = '10px';
+    buttonContainer.style.padding = '10px 20px';
+    buttonContainer.style.borderRadius = '6px';
+    buttonContainer.style.border = 'none';
+    buttonContainer.style.backgroundColor = '#242424';
+    buttonContainer.style.color = 'white';
+    buttonContainer.style.fontSize = '16px';
+    buttonContainer.style.transition = '0.3s all ease';
+    buttonContainer.style.cursor = 'pointer';
+    buttonContainer.style.position = 'relative';
+  
+    buttonContainer.addEventListener('mouseenter', function() {
+      buttonContainer.style.backgroundColor = '#303030';
+    });
+    buttonContainer.addEventListener('mouseleave', function() {
+      buttonContainer.style.backgroundColor = '#242424';
+    });
+  
+    const buttonText = document.createElement('span');
+    buttonText.textContent = title;
+    buttonText.style.flexGrow = '1';
+    buttonText.style.width = '100px';
+    buttonText.style.fontSize = '14px';
+    buttonContainer.appendChild(buttonText);
+  
+    const infoIcon = document.createElement('span');
+    infoIcon.textContent = 'i';
+    infoIcon.style.marginLeft = '10px';
+    infoIcon.style.cursor = 'pointer';
+    buttonContainer.appendChild(infoIcon);
+  
+    const tooltip = document.createElement('div');
+    tooltip.textContent = info;
+    tooltip.style.position = 'absolute';
+    tooltip.style.bottom = '100%';
+    tooltip.style.left = '50%';
+    tooltip.style.transform = 'translateX(-50%)';
+    tooltip.style.padding = '5px 10px';
+    tooltip.style.backgroundColor = '#333';
+    tooltip.style.color = '#fff';
+    tooltip.style.borderRadius = '4px';
+    tooltip.style.fontSize = '14px';
+    tooltip.style.whiteSpace = 'nowrap';
+    tooltip.style.visibility = 'hidden';
+    tooltip.style.opacity = '0';
+    tooltip.style.transition = 'opacity 0.3s';
+    tooltip.style.zIndex = '1001';
+    buttonContainer.appendChild(tooltip);
+  
+    infoIcon.addEventListener('mouseenter', function() {
+      tooltip.style.visibility = 'visible';
+      tooltip.style.opacity = '1';
+    });
+  
+    infoIcon.addEventListener('mouseleave', function() {
+      tooltip.style.visibility = 'hidden';
+      tooltip.style.opacity = '0';
+    });
+  
+    buttonContainer.onclick = function() {
+      isOn = !isOn;
+      localStorage.setItem(`buttonState-${id}`, isOn);
+      onClick(isOn);
+      buttonContainer.style.backgroundColor = isOn ? '#4CAF50' : '#F44336'; // Change background color based on state
+    };
+  
+    return buttonContainer;
+  }
+  
+  
+
+  // Function to show the modal
+  function showModal() {
+    // Create the modal overlay
+    const modalOverlay = document.createElement('div');
+    modalOverlay.id = 'modal-overlay';
+    modalOverlay.style.position = 'fixed';
+    modalOverlay.style.top = '0';
+    modalOverlay.style.left = '0';
+    modalOverlay.style.width = '100%';
+    modalOverlay.style.height = '100%';
+    modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modalOverlay.style.backdropFilter = 'blur(5px)';
+    modalOverlay.style.display = 'flex';
+    modalOverlay.style.justifyContent = 'center';
+    modalOverlay.style.alignItems = 'center';
+    modalOverlay.style.zIndex = '1000';
+    modalOverlay.style.opacity = '0';
+    modalOverlay.style.visibility = 'hidden';
+    modalOverlay.style.transition = 'opacity 0.3s ease, visibility 0.3s ease';
+
+    // Create the modal content
+    const modalContent = document.createElement('div');
+    modalContent.id = 'modal-content';
+    modalContent.style.width = '800px';
+    modalContent.style.maxHeight = '650px';
+    modalContent.style.backgroundColor = 'rgb(32,32,32)';
+    modalContent.style.borderRadius = '10px';
+    modalContent.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
+    modalContent.style.display = 'flex';
+    modalContent.style.flexDirection = 'column';
+    modalContent.style.padding = '20px';
+    modalContent.style.overflowY = 'auto';
+
+    // Modal Header
+    const headerContainer = document.createElement('div');
+    headerContainer.style.display = 'flex';
+    headerContainer.style.flexDirection = 'column';
+    headerContainer.style.alignItems = 'center';
+    headerContainer.style.marginBottom = '15px';
+
+    const header1 = document.createElement('div');
+    header1.style.color = '#fff';
+    header1.style.fontSize = '24px';
+    header1.style.marginBottom = '5px';
+    header1.textContent = 'RoSync Settings';
+
+    const subText1 = document.createElement('div');
+    subText1.style.color = '#aaa';
+    subText1.style.marginBottom = '50px';
+    subText1.style.fontSize = '14px';
+    subText1.textContent = 'Customize your RoSync experience!';
+
+    headerContainer.appendChild(header1);
+    headerContainer.appendChild(subText1);
+    modalContent.appendChild(headerContainer);
+
+    // Container for buttons
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.style.display = 'flex';
+    buttonsContainer.style.justifyContent = 'center';
+    buttonsContainer.style.alignItems = 'center';
+    buttonsContainer.style.flexWrap = 'wrap';
+    buttonsContainer.style.marginBottom = '15px';
+    buttonsContainer.style.gap = '10px'; // Optional: Add gap between buttons for spacing
+    modalContent.appendChild(buttonsContainer);
+
+    
+    
+    
+
+
+    
+  
+    
+    
+
+    
+    
+
+    buttonsData.forEach(([title, id, onClick, info]) => {
+      const buttonElement = createButton(title, id, onClick, info);
+      buttonsContainer.appendChild(buttonElement);
+    });
+
+    // Create and append the close button
+    const modalClose = document.createElement('button');
+    modalClose.textContent = 'Close';
+    modalClose.style.marginTop = '20px';
+    modalClose.style.backgroundColor = 'rgb(36,36,36)';
+    modalClose.style.border = '0';
+    modalClose.style.borderRadius = '6px';
+    modalClose.onclick = function() {
+      hideModal();
+    };
+    modalContent.appendChild(modalClose);
+
+    modalOverlay.appendChild(modalContent);
+    document.body.appendChild(modalOverlay);
+
+    // Show the modal with transition
+    requestAnimationFrame(() => {
+      modalOverlay.style.opacity = '1';
+      modalOverlay.style.visibility = 'visible';
+    });
+
+    // Close modal when clicking outside of modal content
+    modalOverlay.addEventListener('click', function(event) {
+      if (event.target === modalOverlay) {
+        hideModal();
+      }
+    });
+  }
+
+  // Function to hide the modal
+  function hideModal() {
+    const modalOverlay = document.getElementById('modal-overlay');
+    if (modalOverlay) {
+      modalOverlay.style.opacity = '0';
+      modalOverlay.style.visibility = 'hidden';
+      setTimeout(() => modalOverlay.remove(), 300); // Remove modal after transition
+    }
+    isModalVisible = false;
+  }
+
+  // Create buttons to trigger modal
+  const container = document.querySelector('.simplebar-content');
+  const buttonContainer = document.createElement('div');
+  const button = document.createElement('button');
+  button.onclick = function() {
+    showModal();
+  };
+
+  styleButton(button, 'RoSync', '#', 'https://deossspy.github.io/3IR/gear.png');
+  buttonContainer.appendChild(button);
+  container.appendChild(buttonContainer);
+
+
+// Function to remove the "Get Premium" button
+function removeGetPremiumButton() {
+  const premiumButton = document.querySelector('a#upgrade-now-button.btn-growth-md.btn-secondary-md');
+  if (premiumButton) {
+    premiumButton.remove();
+  } else {
+    console.error('Get Premium button not found!');
+  }
+}
+
+// Call the function to remove the button
+removeGetPremiumButton();
+
+
+// Check the stored state of banners from localStorage
+const bannersState = localStorage.getItem('bannersEnabled') === 'true';
+
+// Get all banners and apply the stored state
+const banners = document.querySelectorAll('#userBanner');
+banners.forEach(banner => {
+  banner.style.display = bannersState ? 'block' : 'none'; // Apply stored state
+});
+  
+// Function to toggle the round profile status
+function toggleRoundProfileStatus() {
+  alert('Option is currently still being worked on.');
+}
+
+
+
+
+// Create the playerStatus and userStatus divs
+const playerStatus = document.createElement('div');
+playerStatus.id = 'playerStatus';
+playerStatus.style.width = '100%';
+playerStatus.style.height = '30px';
+playerStatus.style.backgroundColor = 'transparent';
+playerStatus.style.gap = '10px';
+playerStatus.style.marginTop = '10px';
+playerStatus.style.justifyContent = 'center';
+playerStatus.style.alignItems = 'center';
+playerStatus.style.display = 'flex';
+
+// Add a margin to move the divs down 5vh
+playerStatus.style.marginTop = '5vh'; // Adjust margin here
+
+const userStatus = document.createElement('div');
+userStatus.id = 'userStatus';
+userStatus.style.width = '100%';
+userStatus.style.height = '30px';
+userStatus.style.backgroundColor = 'transparent';
+userStatus.style.gap = '10px';
+userStatus.style.marginTop = '10px';
+userStatus.style.justifyContent = 'center';
+userStatus.style.alignItems = 'center';
+userStatus.style.display = 'flex';
+
+// Add a margin to move the divs down 5vh
+userStatus.style.marginTop = '5vh'; // Adjust margin here
+
+// Append userStatus to the profile header content
+const holder = document.querySelector('div.section-content.profile-header-content');
+if (holder) {
+  holder.appendChild(userStatus);
+  userStatus.appendChild(playerStatus);
+} else {
+  console.log('holder element not found!');
+}
+
+// Function to update the badges button
+function updateBadgesButton() {
+  const profileHeaderTop = document.querySelector('div.profile-header-top');
+  const sectionContent = document.querySelector('div.section-content.profile-header-content');
+  
+  let statusText = '';
+  let statusColor = '';
+  
+  if (profileHeaderTop) {
+    const statusSpanGame = profileHeaderTop.querySelector('span.profile-avatar-status.game.icon-game');
+    const statusSpanOnline = profileHeaderTop.querySelector('span.profile-avatar-status.online.icon-online');
+
+    // Determine the user status and set button text and background color accordingly
+    if (statusSpanOnline) {
+
+      statusText = 'Online';
+      statusColor = '#00a2ff';  // Online color
+    } else if (statusSpanGame) {
+
+      statusText = 'Playing : ' + (statusSpanGame.getAttribute('title') || '');
+      statusColor = '#02b757';  // Playing color
+    } else {
+
+      statusText = 'Offline';
+      statusColor = 'rgb(35,35,35)';  // Offline color
+    }
+
+    // Apply border color to the section content
+    if (sectionContent) {
+      sectionContent.style.transition = 'border 0.3s ease'; // Smooth transition for border
+      sectionContent.style.border = `2px solid ${statusColor}`;
+
+      // Create a smooth "notch" effect with a pseudo-element and display status in the notch
+      const notch = document.createElement('div');
+      notch.style.position = 'absolute';
+      notch.style.bottom = '0vh'; // Position the notch slightly below the border
+      notch.style.left = '50%'; // Center the notch horizontally
+      notch.style.transform = 'translateX(-50%)'; // Adjust the position of the notch
+      notch.style.width = '43%'; // Width of the notch to accommodate text
+      notch.style.height = '3vh'; // Increased height for the notch
+      notch.style.backgroundColor = statusColor; // Color of the notch to match status color
+      notch.style.borderRadius = '10px 10px 0 0'; // Rounded corners for smooth notch
+      notch.style.display = 'flex';
+      notch.style.justifyContent = 'center';
+      notch.style.alignItems = 'center';
+      notch.style.fontSize = '1.65vh'; // Increased font size for text within the notch
+      notch.style.color = 'white'; // Text color within the notch
+      notch.style.fontWeight = 'bold'; // Make the font bold
+      notch.style.cursor = 'default';
+      notch.id = '.status-notch';
+
+      // Add the status text inside the notch
+      const notchText = document.createElement('span');
+      notchText.textContent = statusText;  // Online, Playing, or Offline
+      notch.appendChild(notchText);
+
+      sectionContent.style.position = 'relative'; // Ensure sectionContent is positioned relatively
+      sectionContent.appendChild(notch); // Append the notch to the section content
+    }
+
+  } else {
+    badgesButton.textContent = 'Offline';
+    badgesButton.style.backgroundColor = 'rgb(35,35,35)';
+    if (sectionContent) {
+      sectionContent.style.transition = 'border 0.3s ease';
+      sectionContent.style.border = `2px solid rgb(35,35,35)`; // Offline border color
+      sectionContent.innerHTML = ''; // Remove any previous notch if offline
+    }
+  }
+}
+
+// Initial call to update badgesButton
+updateBadgesButton();
+
+// Update badgesButton and border color every 0.5 seconds
+setInterval(updateBadgesButton, 500);
+
+
+
+
+
+
+
+// Create and append buttons
+const buttonsData = [
+  // Banners Button
+  ['Banners', 'banners', (isOn) => {
+    // Save the state of banner visibility in localStorage
+    localStorage.setItem('bannersEnabled', isOn ? 'true' : 'false');
+    
+    const banners = document.querySelectorAll('#userBanner');
+    banners.forEach(banner => {
+      banner.style.display = isOn ? 'block' : 'none';
+    });
+  }, 'Show or hide banners on the page.'],
+
+  // RoPro Support Button
+  ['RoPro Support', 'ropro-support', (isOn) => {
+    // Save the state of RoPro support in localStorage
+    localStorage.setItem('roProSupportEnabled', isOn ? 'true' : 'false');
+    
+    const playerStatus = document.getElementById('playerStatus');
+    const headerDetails = document.querySelector('div.header-details');
+
+    if (playerStatus && headerDetails) {
+      if (isOn) {
+        console.log('RoPro support enabled. Integrating features...');
+        playerStatus.style.marginTop = '4.2vh';
+        playerStatus.style.height = '30px';
+        moveDetailsActions();
+        arrangeDetailsActions();
+      } else {
+        console.log('RoPro support disabled. Reverting to original layout.');
+        playerStatus.style.marginTop = '20px';
+        playerStatus.style.height = '10px';
+        headerDetails.appendChild(playerStatus);
+        window.location.reload();
+      }
+    }
+  }, 'Enable or disable support for the RoPro extension.'],
+
+  // Join Discord Button
+  ['Join Discord', 'join-discord', () => {
+    // Open Discord invite link in a new tab
+    window.open('https://discord.gg/35PZ29whDv', '_blank');
+  }, 'Join our official Discord community!'],
+
+];
+
+
+// Load settings from localStorage on page load
+window.addEventListener('DOMContentLoaded', () => {
+  // Restore the banners visibility state
+  if (localStorage.getItem('bannersEnabled') === 'true') {
+    const banners = document.querySelectorAll('#userBanner');
+    banners.forEach(banner => {
+      banner.style.display = 'block';
+    });
+  }
+
+  // Restore RoPro support state
+  if (localStorage.getItem('roProSupportEnabled') === 'true') {
+    const playerStatus = document.getElementById('playerStatus');
+    const headerDetails = document.querySelector('div.header-details');
+    if (playerStatus && headerDetails) {
+      playerStatus.style.marginTop = '4.2vh';
+      playerStatus.style.height = '30px';
+      moveDetailsActions();
+      arrangeDetailsActions();
+    }
+  }
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+// Function to move 'details-actions desktop-action' under 'playerStatus'
+function moveDetailsActions() {
+  const userStatus = document.getElementById('playerStatus'); // Selector for playerStatus
+  const detailsActions = document.querySelector('.details-actions.desktop-action'); // Selector for details-actions
+
+  if (userStatus && detailsActions) {
+    // Append detailsActions as a child of playerStatus
+    userStatus.appendChild(detailsActions);
+  }
+}
+
+// Function to arrange 'details-actions desktop-action' elements side by side
+function arrangeDetailsActions() {
+  const detailsActionsContainer = document.querySelector('.details-actions.desktop-action'); // Selector for details-actions
+
+  if (detailsActionsContainer) {
+    // Apply styles to make the children align side by side
+    detailsActionsContainer.style.display = 'flex';
+    detailsActionsContainer.style.marginTop = '2vh';
+    detailsActionsContainer.style.flexDirection = 'row'; // Row layout
+    detailsActionsContainer.style.gap = '10px'; // Add space between items (optional)
+  }
+}
+
+// Function to check and apply settings dynamically
+function refreshSettings() {
+  // Round Status
+  const roundStatusEnabled = localStorage.getItem('roundStatusEnabled') === 'true';
+  const roundProfilePics = document.querySelectorAll('.round-profile-class');
+  roundProfilePics.forEach(profile => {
+    profile.style.display = roundStatusEnabled ? 'block' : 'none';
+  });
+
+  // Banners
+  const bannersEnabled = localStorage.getItem('bannersEnabled') === 'true';
+  const banners = document.querySelectorAll('#userBanner');
+  banners.forEach(banner => {
+    banner.style.display = bannersEnabled ? 'block' : 'none';
+  });
+
+  // RoPro Support
+  const roProSupportEnabled = localStorage.getItem('roProSupportEnabled') === 'true';
+  const playerStatus = document.getElementById('playerStatus'); // Adjust selector if necessary
+  const headerDetails = document.querySelector('div.header-details'); // Original parent of userStatus
+  const detailsActions = document.querySelector('.details-actions.desktop-action');
+
+  if (playerStatus && headerDetails) {
+    if (roProSupportEnabled) {
+      playerStatus.style.marginTop = '4.2vh';
+      playerStatus.style.height = '30px'; // Set height to 30px when RoPro is enabled
+      moveDetailsActions(); // Ensure the elements are moved when RoPro is enabled
+      arrangeDetailsActions(); // Ensure the layout is updated
+    } else {
+      playerStatus.style.marginTop = '10px';
+      playerStatus.style.height = '0.1px'; // Set height to 0.1px when RoPro is disabled
+      if (detailsActions) headerDetails.appendChild(detailsActions); // Move back to original parent
+    }
+  }
+
+  // Round Status - Online Avatar Blue Border
+  const onlineStatus = document.querySelector('span.profile-avatar-status.online.icon-online');
+  if (roundStatusEnabled && onlineStatus) {
+    const avatarContainer = document.querySelector('.thumbnail-2d-container .avatar-card-image.profile-avatar-thumb');
+    if (avatarContainer) {
+      avatarContainer.style.border = '3px solid blue'; // Add blue border if online and round status is enabled
+    }
+  } else {
+    const avatarContainer = document.querySelector('.thumbnail-2d-container .avatar-card-image.profile-avatar-thumb');
+    if (avatarContainer) {
+      avatarContainer.style.border = ''; // Remove border if not online or round status is disabled
+    }
+  }
+}
+
+// Initialize settings on page load
+refreshSettings();
+
+// Check and refresh settings every 0.75 seconds
+setInterval(refreshSettings, 750);
+
+
+
+
+
+
+  let bannerDisabled = false;
+  const bannerButtonId = 'btnBanners'; // The ID of the button
+  // Function to toggle the banner state
+function toggleBanners() {
+  bannerDisabled = !bannerDisabled;
+
+  // Update the display based on the bannerDisabled state
+  imgElement.style.display = bannerDisabled ? 'none' : 'block';
+
+}
+
+// Function to update the button color based on the banner state
+function updateBannerButtonColor() {
+  const button = document.getElementById(bannerButtonId);
+  if (button) {
+    button.style.backgroundColor = bannerDisabled ? '#F44336' : '#4CAF50';
+  }
+}
+
+// Function to check and update the banner state every second
+function checkBannerState() {
+  const savedBannerDisabled = localStorage.getItem('bannerDisabled') === 'true';
+  
+  // Update the bannerDisabled variable and button color if there is a change
+  if (bannerDisabled !== savedBannerDisabled) {
+    bannerDisabled = savedBannerDisabled;
+    updateBannerButtonColor();
+  }
+}
+
+// Set an interval to check the banner state every second
+setInterval(checkBannerState, 1000);
+
+// Initial call to set the button color on page load
+updateBannerButtonColor();
+
+
+
+
+
+
+  
+  const buttonHolder = document.createElement('div');
+  buttonHolder.id = 'buttonHolder';
+  buttonHolder.style.width = '700px';
+  buttonHolder.style.height = '30px';
+  buttonHolder.style.backgroundColor = 'transparent';
+  buttonHolder.style.gap = '10px';
+  const nameTXT = document.querySelector('div.header-caption');
+  if (nameTXT) {
+  nameTXT.appendChild(buttonHolder);
+  }
+
+  const alladsl = document.querySelector('div.section-content.profile-header-content');
+  alladsl.style.backgroundColor = '#161616';
+  alladsl.style.borderRadius = '1.4vh';  
+  const aboutTab = document.querySelector('a#tab-about.rbx-tab-heading');
+  aboutTab.style.backgroundColor = '#161616';
+  const creationsTab = document.querySelector('a#tab-creations.rbx-tab-heading');
+  creationsTab.style.backgroundColor = '#161616';
+  const profileMask = document.querySelector('div.profile-avatar-mask');
+  profileMask.style.backgroundColor = '#161616';
+  const bodyy = document.querySelector('body');
+  bodyy.style.backgroundColor = '#101010';
+  const frameThing = document.querySelector('div.content');
+  frameThing.style.backgroundColor = '#101010';
+  const mainFrame = document.querySelector('main#container-main.container-main');
+  mainFrame.style.backgroundColor = 'transparent';
+  const tabHeading = document.querySelector('ul#horizontal-tabs.nav.nav-tabs');
+
+const avatarButton = document.createElement('button');
+avatarButton.textContent = 'Avatar';
+avatarButton.style.width = '100%';
+avatarButton.style.height = '40px';
+avatarButton.style.backgroundColor = '#161616';
+avatarButton.style.color = 'rgb(235,235,235)';
+avatarButton.style.border = '1px';
+avatarButton.style.borderColor = 'white';
+avatarButton.style.transition = 'background-color 0.25s';
+const profileCurrentWearingAvatar = document.getElementById('profile-current-wearing-avatar');
+
+avatarButton.addEventListener('click', () => {
+
+  profileCurrentWearingAvatar.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+});
+
+
+
+
+
+avatarButton.addEventListener('mouseenter', function() {
+  avatarButton.style.backgroundColor = 'rgb(45,45,45)';
+});
+
+avatarButton.addEventListener('mouseleave', function() {
+  avatarButton.style.backgroundColor = '#161616';
+});
+
+
+tabHeading.appendChild(avatarButton);
+
+
+
+
+
+
+
+
+
+
+const prpfo = document.querySelector('div.profile-header-top');
+prpfo.style.marginLeft = '25%';
+
+
+
+
+
+
+
+
+
+// Create the <img> element
+const imgElement = document.createElement('img');
+imgElement.src = ''; // Set initial source or leave empty
+imgElement.style.width = '100%';
+imgElement.style.height = '245px';
+imgElement.style.marginBottom = '15px';
+imgElement.style.borderRadius = '10px';
+imgElement.style.cursor = 'pointer';
+imgElement.style.overflow = 'hidden'; // Hide overflow content
+imgElement.style.position = 'relative'; // Allow positioning adjustments
+imgElement.style.objectPosition = 'center'; // Default object position
+imgElement.id = 'userBanner';
+
+// Set up click action for the image
+imgElement.onclick = function() {
+  toggleDropdownMenu();
+};
+
+// Create the dropdown menu container
+const dropdownMenuContainer = document.createElement('div');
+dropdownMenuContainer.id = 'dropdownMenuContainer';
+dropdownMenuContainer.style.position = 'fixed'; // Use fixed positioning for better overlay behavior
+dropdownMenuContainer.style.top = '50%'; // Center vertically
+dropdownMenuContainer.style.left = '50%'; // Center horizontally
+dropdownMenuContainer.style.transform = 'translate(-50%, -50%)'; // Center the element
+dropdownMenuContainer.style.backgroundColor = 'rgb(39,39,39)';
+dropdownMenuContainer.style.padding = '20px';
+dropdownMenuContainer.style.borderRadius = '6px';
+dropdownMenuContainer.style.zIndex = '1000'; // Ensure it's above other content
+dropdownMenuContainer.style.width = '80%'; // Adjust width as needed
+dropdownMenuContainer.style.maxWidth = '974px'; // Max width
+dropdownMenuContainer.style.maxHeight = '80%'; // Max height
+dropdownMenuContainer.style.overflowY = 'auto';
+dropdownMenuContainer.style.transition = 'opacity 0.3s ease, visibility 0.3s ease';
+dropdownMenuContainer.style.opacity = '0';
+dropdownMenuContainer.style.visibility = 'hidden';
+
+// Add blur effect behind the menu
+const blurOverlay = document.createElement('div');
+blurOverlay.id = 'blurOverlay';
+blurOverlay.style.position = 'fixed';
+blurOverlay.style.top = '0';
+blurOverlay.style.left = '0';
+blurOverlay.style.width = '100%';
+blurOverlay.style.height = '100%';
+blurOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Semi-transparent background
+blurOverlay.style.backdropFilter = 'blur(10px)'; // Blur effect
+blurOverlay.style.zIndex = '999'; // Just below the dropdown menu
+blurOverlay.style.opacity = '0';
+blurOverlay.style.visibility = 'hidden';
+
+// Add header and text with request button
+const header = document.createElement('div');
+header.style.color = '#fff';
+header.style.fontSize = '24px';
+header.style.marginBottom = '10px';
+header.style.display = 'flex';
+header.style.alignItems = 'center'; // Align text and button
+header.textContent = 'Banners';
+
+const subText = document.createElement('div');
+subText.style.color = '#aaa';
+subText.style.fontSize = '14px';
+subText.textContent = 'Banners are currently only visible to you.';
+
+const infoContainer = document.createElement('div');
+infoContainer.style.marginBottom = '15px';
+infoContainer.appendChild(header);
+infoContainer.appendChild(subText);
+
+// Create buttons for categories
+const categoryButtonsContainer = document.createElement('div');
+categoryButtonsContainer.style.marginBottom = '15px';
+categoryButtonsContainer.style.display = 'flex';
+categoryButtonsContainer.style.flexWrap = 'wrap'; // Allow wrapping for smaller screens
+
+const categories = {
+  '⭐ New': [
+    { name: '⛈️ Storm', url: 'https://i.pinimg.com/originals/4c/02/cb/4c02cb8f367ed25ee57d7f9338a05a16.gif' },
+    { name: '🐱 Hello Kitty', url: 'https://i.pinimg.com/originals/97/ae/33/97ae33912e5decac560899318a93c074.gif' },
+    { name: '🐱 Kuromi', url: 'https://64.media.tumblr.com/169c051eb756f9a979a024ce5595e2ba/15ae68ce0c1f6d73-59/s1280x1920/eb11653cac7358f4a44218b6651f557f2ce302d7.gif' },
+  ],
+  'Basic Banners': [
+    { name: '☁️ Anime Clouds', url: 'https://i.pinimg.com/originals/79/d1/92/79d19238535fc14831bd380bb776382e.gif' },
+    { name: '🌎 World Spinning', url: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Blue_Marble_rotating.gif' },
+    { name: '🔟 Windows 10', url: 'https://betanews.com/wp-content/uploads/2016/08/og-windows10.gif' },
+    { name: '🚀 Space Loop', url: 'https://media.tenor.com/2oQwi7vJz9wAAAAC/loop-space.gif' },
+    { name: '⌛️ Loading...', url: 'https://i.pinimg.com/originals/7e/2a/eb/7e2aeb1567e91bfc2404cecca6aceecd.gif' }
+  ],
+  'Rappers': [
+    { name: '🎤 Yeat', url: 'https://thefader-res.cloudinary.com/private_images/c_limit,w_1024/c_crop,h_533,w_1024,x_0,y_173,f_auto,q_auto:eco/Untitled_xoyxyd/Untitled_xoyxyd.jpg' },
+    { name: '🎤 Playboi Carti', url: 'https://img.buzzfeed.com/buzzfeed-static/complex/images/lawhcb3nmqmfrt0gu6bi/twitter-users-react-playboi-carti-recording-adlibs-in-studio.jpg?output-format=jpg&output-quality=auto' },
+    { name: '🎤 Ken Carson', url: 'https://images.discovery-prod.axs.com/2024/07/ken-carson-tickets_10-17-24_17_668ee71797eaa.jpg'}
+  ],
+  'Album Covers': [
+    { name: '💿 A Great Chaos', url: 'https://lastfm.freetls.fastly.net/i/u/avatar170s/408d5e2dfc5fd7d25a35b47e77d42bb7' },
+    { name: '💿 Graduation', url: 'https://media.reverbmachine.com/2018/04/kanye_good_life_cover.jpg' },
+    { name: '💿 Whole Lotta Red', url: 'https://images.genius.com/0781662b9a7dce107d836c6a4a1fc7b3.770x770x136.gif' }
+  ],
+  'Join The Discord For Custom Banners !': [
+    
+  ]
+};
+
+Object.keys(categories).forEach(category => {
+  const button = document.createElement('button');
+  button.textContent = category;
+  button.style.backgroundColor = 'rgb(45,45,45)';
+  button.style.color = '#fff';
+  button.style.fontSize = '16px';
+  button.style.border = '0px';
+  button.style.borderRadius = '6px';
+  button.style.padding = '5px 20px';
+  button.style.marginRight = '10px';
+  button.style.marginTop = '10px';
+  button.style.cursor = 'pointer';
+  button.style.transition = '0.3s all ease';
+  button.addEventListener('mouseenter', function() {
+    button.style.backgroundColor = 'rgb(65,65,65)';
+  });
+
+  button.addEventListener('mouseleave', function() {
+    button.style.backgroundColor = 'rgb(45,45,45)';
+  });
+
+  button.addEventListener('click', function() {
+    showCategory(category);
+  });
+
+  categoryButtonsContainer.appendChild(button);
+});
+
+infoContainer.appendChild(categoryButtonsContainer);
+dropdownMenuContainer.appendChild(infoContainer);
+
+// Function to display a specific category
+function showCategory(category) {
+  // Clear previous options
+  const existingCategoryLists = dropdownMenuContainer.querySelectorAll('ul');
+  existingCategoryLists.forEach(list => list.remove());
+
+  // Add selected category options to the dropdown menu
+  const selectedCategoryList = document.createElement('ul');
+  selectedCategoryList.style.padding = '0';
+  selectedCategoryList.style.margin = '0';
+
+  categories[category].forEach(option => {
+    const listItem = document.createElement('li');
+    listItem.style.listStyle = 'none';
+    listItem.style.marginBottom = '15px'; // Space between options
+
+    // Container for image and text
+    const optionContainer = document.createElement('div');
+    optionContainer.style.borderRadius = '6px';
+    optionContainer.style.border = '0px';
+    optionContainer.style.backgroundColor = 'rgb(36,36,36)';
+    optionContainer.style.width = '100%';
+    optionContainer.style.padding = '10px'; // Add some padding around the image and text
+    optionContainer.style.boxSizing = 'border-box'; // Ensure padding doesn't affect width
+
+    // Option button (image)
+    const optionButton = document.createElement('button');
+    optionButton.style.borderRadius = '6px';
+    optionButton.style.border = '0px';
+    optionButton.style.backgroundColor = 'rgb(36,36,36)';
+    optionButton.style.width = '100%';
+    optionButton.style.height = '300px';
+    optionButton.style.padding = '0';
+    optionButton.style.transition = '0.3s all ease';
+    optionButton.style.cursor = 'pointer';
+    optionButton.style.display = 'flex';
+    optionButton.style.flexDirection = 'column';
+    optionButton.style.alignItems = 'center';
+    optionButton.style.justifyContent = 'center';
+    optionButton.style.overflow = 'hidden'; // Hide overflow content
+
+    const newImage = document.createElement('img');
+    newImage.style.width = '100%'; // Ensure image fills the button
+    newImage.style.height = '245px'; // Maintain aspect ratio
+    newImage.style.borderRadius = '10px';
+    newImage.src = option.url;
+
+    const optionText = document.createElement('div');
+    optionText.textContent = option.name;
+    optionText.style.color = '#aaa';
+    optionText.style.fontSize = '14px';
+    optionText.style.marginTop = '5px'; // Space between image and text
+
+    optionButton.appendChild(newImage);
+    optionButton.appendChild(optionText);
+
+    optionButton.addEventListener('mouseenter', function() {
+      optionButton.style.backgroundColor = 'rgb(50,50,50)';
+    });
+
+    optionButton.addEventListener('mouseleave', function() {
+      optionButton.style.backgroundColor = 'rgb(36,36,36)';
+    });
+
+    optionButton.addEventListener('click', function() {
+      changeUserBanner(option.url);
+      hideDropdownMenu();
+    });
+
+    optionContainer.appendChild(optionButton);
+    listItem.appendChild(optionContainer);
+    selectedCategoryList.appendChild(listItem);
+  });
+
+  dropdownMenuContainer.appendChild(selectedCategoryList);
+}
+
+// Create and style the close button
+const closeButton = document.createElement('button');
+closeButton.textContent = 'Close';
+closeButton.style.marginTop = '10px';
+closeButton.style.backgroundColor = 'rgb(45,45,45)';
+closeButton.style.fontSize = '18px';
+closeButton.style.width = '100%';
+closeButton.style.height = '40px';
+closeButton.style.border = '0px';
+closeButton.style.borderRadius = '6px';
+closeButton.style.cursor = 'pointer';
+closeButton.addEventListener('mouseenter', function() {
+  closeButton.style.backgroundColor = 'rgb(65,65,65)';
+});
+
+closeButton.addEventListener('mouseleave', function() {
+  closeButton.style.backgroundColor = 'rgb(45,45,45)';
+});
+
+closeButton.addEventListener('click', function() {
+  hideDropdownMenu();
+});
+
+dropdownMenuContainer.appendChild(closeButton);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Function to apply styles
+
+
+// Function to apply styles
+function applyStyles(element, color) {
+  element.style.backgroundColor = color; // Set background color
+  element.style.border = `3px solid ${color}`; // Set border with the same color
+}
+
+// Function to update friends' avatars style
+function updateFriendsAvatarsStyle() {
+  const friendsAvatars = document.querySelectorAll('span.avatar-card-link.friend-avatar.icon-placeholder-avatar-headshot'); // Main part
+  const friendsAvatarsDiv = document.querySelectorAll('a.text-link.friend-link.ng-isolate-scope'); // Div for the friendsAvatars
+
+  console.log(friendsAvatars);
+  console.log(friendsAvatarsDiv);
+
+  friendsAvatarsDiv.forEach((avatarDiv, index) => {
+    const friendStatusGame = avatarDiv.querySelector('span.avatar-status.friend-status.icon-game');
+    const friendStatusOnline = avatarDiv.querySelector('span.avatar-status.friend-status.icon-online');
+    const avatar = friendsAvatars[index]; // Corresponding avatar element
+
+    console.log(avatar);
+    console.log(friendStatusGame, friendStatusOnline);
+
+    if (friendStatusOnline) {
+      applyStyles(avatar, '#00a2ff');
+      friendStatusOnline.style.opacity = '0';
+    } else if (friendStatusGame) {
+      applyStyles(avatar, '#02b757');
+      friendStatusGame.style.opacity = '0';
+    } else {
+      applyStyles(avatar, 'rgb(50, 50, 50)');
+    }
+  });
+}
+
+// Initial call to update the friends' avatars style
+updateFriendsAvatarsStyle();
+
+// Update friends' avatars style every 500 milliseconds
+setInterval(updateFriendsAvatarsStyle, 500);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Function to disable or enable the banner
+
+function toggleBanner() {
+  bannerDisabled = !bannerDisabled;
+
+  if (bannerDisabled) {
+    imgElement.style.display = 'none';
+    localStorage.setItem('bannerDisabled', 'true');
+  } else {
+    imgElement.style.display = 'block';
+    localStorage.removeItem('bannerDisabled');
+  }
+}
+
+// Restore the banner disabled state on page load
+function restoreBannerDisabledState() {
+  const savedBannerDisabled = localStorage.getItem('bannerDisabled');
+  if (savedBannerDisabled === 'true') {
+    bannerDisabled = true;
+    imgElement.style.display = 'none';
+  }
+}
+
+
+
+// Restore the banner disabled state on page load
+restoreBannerDisabledState();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Function to change the user banner
+function changeUserBanner(url) {
+  imgElement.src = url;
+  localStorage.setItem('userBannerUrl', url);
+}
+
+// Restore the saved banner URL on page load
+function restoreBanner() {
+  const savedBannerUrl = localStorage.getItem('userBannerUrl');
+  if (savedBannerUrl) {
+    imgElement.src = savedBannerUrl;
+  }
+}
+
+// Restore the saved banner URL and disabled state
+restoreBanner();
+restoreBannerDisabledState();
+
+// Set the default category to Basic Banners
+showCategory('Basic Banners');
+
+// Insert the image and dropdown menu into the document
+const parentElement3 = document.querySelector('div.section-content.profile-header-content');
+const firstChild = parentElement3.firstChild;
+parentElement3.insertBefore(imgElement, firstChild);
+document.body.appendChild(blurOverlay); // Add blur overlay to the body
+document.body.appendChild(dropdownMenuContainer); // Directly add dropdown menu to the body
+
+// Show/hide the dropdown menu
+function toggleDropdownMenu() {
+  if (dropdownMenuContainer.style.opacity === '0' || dropdownMenuContainer.style.opacity === '') {
+    showDropdownMenu();
+  } else {
+    hideDropdownMenu();
+  }
+}
+
+function showDropdownMenu() {
+  dropdownMenuContainer.style.opacity = '1';
+  dropdownMenuContainer.style.visibility = 'visible';
+  blurOverlay.style.opacity = '1';
+  blurOverlay.style.visibility = 'visible';
+  document.addEventListener('click', outsideClickListener);
+}
+
+function hideDropdownMenu() {
+  dropdownMenuContainer.style.opacity = '0';
+  dropdownMenuContainer.style.visibility = 'hidden';
+  blurOverlay.style.opacity = '0';
+  blurOverlay.style.visibility = 'hidden';
+  document.removeEventListener('click', outsideClickListener);
+}
+
+// Close the dropdown menu when clicking outside
+function outsideClickListener(event) {
+  if (!dropdownMenuContainer.contains(event.target) && event.target !== imgElement) {
+    hideDropdownMenu();
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Function to upload URLs to GitHub
+async function uploadUrlsToGitHub(userId, data) {
+  const fileContent = data.join('\n'); // Convert array to newline-separated string
+  const fileName = `rosync-urls/${userId}.txt`; // File path in the repository
+
+  const githubToken = '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'; // Replace with your GitHub token
+  const repoOwner = 'deossspy'; // Replace with your GitHub username or organization name
+  const repoName = 'Verified-RoSync-Users'; // Replace with your GitHub repository name
+  const branch = 'main'; // Replace with your branch name
+
+  const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${githubToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `Added URLs for user ${userId}`,
+        content: btoa(fileContent), // Encode file content to base64
+        branch: branch
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Verification Failed: ${errorData.message}`);
+    }
+
+    console.log('Success!');
+  } catch (error) {
+    console.error('Verification Failed:', error);
+    throw error;
+  }
+}
+
+// Function to check if user is verified (exists on GitHub)
+async function checkIfUserVerified(userId) {
+  const githubToken = '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'; // Replace with your GitHub token
+  const repoOwner = 'deossspy'; // Replace with your GitHub username or organization name
+  const repoName = 'Verified-RoSync-Users'; // Replace with your GitHub repository name
+  const fileName = `rosync-urls/${userId}.txt`; // File path in the repository
+
+  const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `token ${githubToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data) {
+        return true; // User is verified, file exists
+      }
+    } else {
+      if (response.status === 404) {
+        return false; // User not verified, file does not exist
+      }
+      const errorData = await response.json();
+      throw new Error(`Failed to check verification status: ${errorData.message}`);
+    }
+  } catch (error) {
+    console.error('Error checking verification:', error);
+    return false; // Assume not verified if error occurs
+  }
+}
+
+// Function to add the "ROSYNC USER" or "VERIFY" badge
+async function addExtensionBadge() {
+  const currentPageUrl = window.location.href;
+
+  // Match user ID directly from the current URL
+  const userIdMatch = currentPageUrl.match(/https:\/\/(www|web)\.roblox\.com\/users\/(\d+)\/profile/);
+  if (!userIdMatch) return;
+
+  const userId = userIdMatch[2]; // Extract user ID from URL
+  const profileNameButton = document.querySelector('div.header-title'); // Adjust if necessary
+
+  // Check if the user has clicked "VERIFY" globally
+  const userClickedVerify = localStorage.getItem('userClickedVerify');
+  const isVerified = await checkIfUserVerified(userId); // Check if the user is verified
+
+  // If the user has clicked "VERIFY", we need to hide the button for non-verified profiles
+  if (userClickedVerify && !isVerified) {
+    const verifyButton = document.querySelector('span[style*="background-color: #FF5733"]');
+    if (verifyButton) verifyButton.remove();
+    return;
+  }
+
+  if (profileNameButton) {
+    // Show "ROSYNC USER" if the user is verified
+    if (isVerified) {
+      const badge = document.createElement('span');
+      badge.textContent = 'ROSYNC USER';
+      badge.style.backgroundColor = '#FFD700'; // Gold color
+      badge.style.color = '#000';
+      badge.style.fontSize = '12px';
+      badge.style.fontWeight = 'bold';
+      badge.style.borderRadius = '3px';
+      badge.style.marginRight = '10px';
+      badge.style.padding = '2px 5px';
+      badge.style.verticalAlign = 'middle';
+      badge.style.cursor = 'default';
+
+      profileNameButton.parentNode.insertBefore(badge, profileNameButton.nextSibling);
+    } else if (!userClickedVerify) {
+      // Show "VERIFY" button only if the user hasn't clicked verify yet
+      const verifyButton = document.createElement('span');
+      verifyButton.textContent = 'VERIFY';
+      verifyButton.style.backgroundColor = '#FFD700'; // Red color for verification
+      verifyButton.style.color = '#000';
+      verifyButton.style.fontSize = '12px';
+      verifyButton.style.fontWeight = 'bold';
+      verifyButton.style.borderRadius = '3px';
+      verifyButton.style.marginRight = '10px';
+      verifyButton.style.padding = '2px 5px';
+      verifyButton.style.cursor = 'pointer';
+
+      // Add click event to verify user and upload profile URLs
+      verifyButton.addEventListener('click', async () => {
+        const urlsToSave = [
+          `https://www.roblox.com/users/${userId}/profile`,
+          `https://web.roblox.com/users/${userId}/profile`,
+          `https://www.roblox.com/users/${userId}/profile?friendshipSourceType=PlayerSearch`,
+          `https://web.roblox.com/users/${userId}/profile?friendshipSourceType=PlayerSearch`
+        ];
+
+        try {
+          await uploadUrlsToGitHub(userId, urlsToSave);
+          alert('Profile verified successfully !');
+          // Store the flag in localStorage that the user clicked "VERIFY"
+          localStorage.setItem('userClickedVerify', 'true');
+          location.reload(); // Reload to refresh the badge and remove the "VERIFY" button
+        } catch (error) {
+          console.error('Error uploading URLs:', error);
+          alert('Failed to verify.');
+        }
+      });
+
+      profileNameButton.parentNode.insertBefore(verifyButton, profileNameButton.nextSibling);
+    }
+  }
+}
+
+// Run the functions when the page loads
+(async function () {
+  await addExtensionBadge();
+})();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Target user ID to check
+const targetUserId = '4636995111';
+
+// Function to check if the current page URL contains the target user ID
+function checkProfileUrl() {
+  const currentPageUrl = window.location.href;
+
+  // Check if the current page URL contains the target user ID
+  if (currentPageUrl.includes(`/users/${targetUserId}/`)) {
+    // Get the profile name button element
+    const profileNameButton = document.querySelector('div.header-title');
+    if (!profileNameButton) return;
+
+    // Create the badge element
+    const badge = document.createElement('span');
+    badge.textContent = 'ROSYNC OWNER';
+    badge.style.backgroundColor = '#FFD700'; // Gold color
+    badge.style.color = '#000';
+    badge.style.fontSize = '12px';
+    badge.style.fontWeight = 'bold';
+    badge.style.borderRadius = '3px';
+    badge.style.marginRight = '10px';
+    badge.style.padding = '2px 5px';
+    badge.style.verticalAlign = 'middle';
+    badge.style.cursor = 'default'; // No further action is needed
+
+    // Insert the badge next to the profile name
+    profileNameButton.parentNode.insertBefore(badge, profileNameButton.nextSibling);
+  }
+}
+
+// Run the function to check the URL and add the badge
+checkProfileUrl();
+
+
+
+
+
+
+
+const targetProfileUrl1 = 'https://www.roblox.com/users/2693577133/profile';
+
+// Function to check if the current page URL matches the target profile URL
+function checkProfileUrl1() {
+  const currentPageUrl1 = window.location.href;
+
+  if (currentPageUrl1 === targetProfileUrl1) {
+     // Get the profile name button element
+  const profileNameButton = document.querySelector('div.header-title');
+  if (!profileNameButton) return;
+
+  // Create the badge element
+  const badge = document.createElement('span');
+  badge.textContent = 'CO-OWNER';
+  badge.style.backgroundColor = '#FFD700'; // Gold color
+  badge.style.color = '#000';
+  badge.style.fontSize = '12px';
+  badge.style.fontWeight = 'bold';
+  badge.style.borderRadius = '3px';
+  badge.style.marginRight = '10px';
+  badge.style.padding = '2px 5px';
+  badge.style.verticalAlign = 'middle';
+  badge.style.cursor = 'default'; // Set to default as no further action is needed
+
+  // Insert the badge next to the profile name
+  profileNameButton.parentNode.insertBefore(badge, profileNameButton.nextSibling);
+  }
+}
+
+
+checkProfileUrl1();
+
+
+
+
+
+
+
+// Function to display the update log on the first load after an update
+function showUpdateLog() {
+  // Define the current version
+  const currentVersion = '1.4'; // Update this with your version number
+  
+  // Check if the user has already seen this version's update log
+  const lastSeenVersion = localStorage.getItem('lastSeenVersion');
+  
+  if (lastSeenVersion === currentVersion) {
+    return; // If they've already seen it, do nothing
+  }
+
+  // Update log content
+  const updateContent = ` 
+    <h2 style="margin-top: 0; color: #fff; text-align: center;">RoSync Update: Version ${currentVersion}</h2>
+    <center><p><strong>What's New:</strong></p></center>
+    <ul>
+    <li style="color: #4cbb17; text-align: center; margin-top: 1.75vh; font-size: 2vh; font-weight: 700;">Added</li>
+      <li style="color: #fff; text-align: center; margin-bottom: 2vh; font-size: 1.75vh;">| Added 3 New Banners |</li>
+    
+      
+      <li style="color: #f2b949; text-align: center; margin-top: 1.75vh; font-size: 2vh; font-weight: 700;">Revamped</li>
+      <li style="color: #fff; text-align: center; margin-bottom: .35vh; font-size: 1.75vh;">| RoSync Icon Remade |</li>
+      <li style="color: #fff; text-align: center; margin-bottom: 2.35vh; font-size: 1.75vh;">| Notch on Profile |</li>
+      <p style=" text-align: center;; font-size: 1.25vh" >UI Updates Planned.</p>
+    </ul>
+    <center><p>Enjoy a more customizable Roblox experience!</p></center>
+  `;
+
+  // Create the modal overlay with blur effect
+  const modalOverlay = document.createElement('div');
+  modalOverlay.style.position = 'fixed';
+  modalOverlay.style.top = '0';
+  modalOverlay.style.left = '0';
+  modalOverlay.style.width = '100%';
+  modalOverlay.style.height = '100%';
+  modalOverlay.style.backdropFilter = 'blur(8px)'; // Blur effect
+  modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+  modalOverlay.style.display = 'flex';
+  modalOverlay.style.justifyContent = 'center';
+  modalOverlay.style.alignItems = 'center';
+  modalOverlay.style.zIndex = '1000';
+  modalOverlay.style.opacity = '0'; // Start with zero opacity for background
+  modalOverlay.style.transition = 'opacity 0.5s ease'; // Smooth fade-in/out for background
+
+  // Create the modal content
+  const modalContent = document.createElement('div');
+  modalContent.style.backgroundColor = '#121212';
+  modalContent.style.borderRadius = '15px';
+  modalContent.style.padding = '30px';
+  modalContent.style.width = '90%';
+  modalContent.style.maxWidth = '500px';
+  modalContent.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+  modalContent.style.textAlign = 'left';
+  modalContent.style.opacity = '0'; // Start with zero opacity for modal content
+  modalContent.style.transform = 'scale(0.8)'; // Start with scale smaller
+  modalContent.style.transition = 'opacity 0.5s ease, transform 0.5s ease'; // Smooth fade-in and scale-up
+
+  modalContent.innerHTML = updateContent;
+  
+  // Create the OK button
+  const okButton = document.createElement('button');
+  okButton.textContent = 'OK';
+  okButton.disabled = true; // Initially disabled
+  okButton.style.marginTop = '20px';
+  okButton.style.padding = '10px 20px';
+  okButton.style.border = 'none';
+  okButton.style.borderRadius = '5px';
+  okButton.style.backgroundColor = '#4CAF50';
+  okButton.style.color = '#fff';
+  okButton.style.cursor = 'not-allowed'; // Disabled style
+  okButton.style.opacity = '0.5'; // Semi-transparent to indicate disabled state
+  okButton.style.display = 'block';
+  okButton.style.marginLeft = 'auto';
+  okButton.style.marginRight = 'auto';
+
+  // Enable the button after 5 seconds
+  setTimeout(() => {
+    okButton.disabled = false;
+    okButton.style.cursor = 'pointer';
+    okButton.style.opacity = '1'; // Fully visible when enabled
+  }, 3000);
+
+  okButton.onclick = function() {
+    // Save the current version as seen in localStorage
+    localStorage.setItem('lastSeenVersion', currentVersion);
+    
+    // Apply the fade-out and scale-down animation for both modal content and background
+    modalContent.style.opacity = '0';
+    modalContent.style.transform = 'scale(0.8)';
+    modalOverlay.style.opacity = '0'; // Fade the background
+    
+    // Wait for the animation to complete, then remove the modal
+    setTimeout(() => {
+      document.body.removeChild(modalOverlay);
+    }, 500); // Match this with the duration of the animation (500ms)
+  };
+
+  modalContent.appendChild(okButton);
+  modalOverlay.appendChild(modalContent);
+  document.body.appendChild(modalOverlay);
+
+  // Trigger the animation to show the modal and background
+  setTimeout(() => {
+    modalOverlay.style.opacity = '1'; // Fade the background in
+    modalContent.style.opacity = '1';
+    modalContent.style.transform = 'scale(1)'; // Scale up the modal
+  }, 100); // Start after a slight delay
+}
+
+// Call the function to display the update log
+showUpdateLog();
+
+
+
+
+
+
+
+
+
+
+
+// Function to move 'details-actions desktop-action' under 'playerStatus'
+function moveDetailsActions() {
+  const userStatus = document.getElementById('userStatus'); // Selector for playerStatus
+  const detailsActions = document.querySelector('.details-actions.desktop-action'); // Selector for details-actions
+
+  if (userStatus && detailsActions) {
+    // Append detailsActions as a child of playerStatus
+    userStatus.appendChild(detailsActions);
+  }
+}
+
+// Call the function to move the element
+moveDetailsActions();
+
+// Function to arrange 'details-actions desktop-action' elements side by side
+function arrangeDetailsActions() {
+  const detailsActionsContainer = document.querySelector('.details-actions.desktop-action'); // Selector for details-actions
+
+  if (detailsActionsContainer) {
+    // Apply styles to make the children align side by side
+    detailsActionsContainer.style.display = 'flex';
+    detailsActionsContainer.style.marginTop = '2vh';
+    detailsActionsContainer.style.flexDirection = 'row'; // Row layout
+    detailsActionsContainer.style.gap = '10px'; // Add space between items (optional)
+  }
+}
+
+// Call the function to arrange the elements
+arrangeDetailsActions();
+
+
+
+
+const sidebar = document.querySelector('rbx-left-col');
+sidebar.style.width = '50%';
+
+
+
+// Select the parent element
+const settingsMenu = document.getElementById('settings-popover-menu');
+
+// Check if the parent element exists
+if (settingsMenu) {
+  // Create the <li> element
+  const listItem = document.createElement('li');
+  
+  // Create the <a> element (button)
+  const button = document.createElement('a');
+  button.style.paddingLeft = '5px';
+  button.style.paddingRight = '5px';
+  button.className = 'rbx-menu-item'; // Add the required classes
+  button.textContent = 'RoSync'; // Set the button text
+  
+  // Append the button to the <li> element
+  listItem.appendChild(button);
+  
+  // Append the <li> element to the settings menu
+  settingsMenu.appendChild(listItem);
+  
+  console.log('RoSync button added to settings menu.');
+} else {
+  console.error('Parent element with id "settings-popover-menu" not found.');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+const customCSS = `
+
+img.ng-scope.ng-isolate-scope:hover {
+  transform: translateY(-5px);
+  transition: 0.25s all ease;
+
+}
+
+
+div.section-content.profile-header-content{
+
+height: max-content;
+
+}
+
+
+
+
+
+div.header-title{
+margin-top: 12px;
+}
+
+
+button.profile-join-game.btn-growth-md{
+background-color: #02b757;
+transition: 0.3 all ease;
+}
+
+button.profile-join-game.btn-growth-md:hover{
+
+background-color: #02b757;
+
+}
+
+
+div.ng-scope.container-list {
+background-color: #161616;
+justify-content: center;
+align-items: center;
+}
+
+
+
+`;
+
+const styleElement = document.createElement('style');
+styleElement.innerHTML = customCSS;
+document.head.appendChild(styleElement);
+
+  
+}
